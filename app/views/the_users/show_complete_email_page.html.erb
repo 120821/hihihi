@@ -1,0 +1,67 @@
+<div class="flex flex-col md:flex-row justify-center gap-4">
+  <div class="w-full md:8/12 lg:w-5/12">
+    <div class="card card-l6">
+      <div class='card-body alert alert-info'>
+        请绑定Email. 在成功绑定Email之后，您才可以正常使用论坛的功能。 <br/>
+        如果您已经使用Email的方式注册过本论坛，可以直接输入您的Email, 以及密码。 <br/>
+        如果您之前没有注册过，请输入您的Email.
+      </div>
+      <div class="card-body">
+        <div class="card-title">完善资料: 绑定Email</div>
+
+        <%= form_tag complete_email_the_users_path do %>
+          <div class="form-group">
+            <%= text_field_tag "email", '', placeholder: '请输入您的email', class: "form-control form-control form-control-lg" %>
+          </div>
+
+          <div class="form-group">
+            <%= password_field_tag "password_for_exitsing_email", '', placeholder: '该Email是本论坛会员, 请输入对应的密码', class: "form-control form-control form-control-lg", style: 'display: none' %>
+          </div>
+
+          <div class="form-group new_user_fields">
+            <%= text_field_tag "login", '', placeholder: '请输入Login', class: "form-control form-control form-control-lg", style: 'display: ' %>
+          </div>
+          <div class="form-group new_user_fields">
+            <%= password_field_tag "password", '', placeholder: '请输入新密码', class: "form-control form-control form-control-lg", style: 'display: ' %>
+          </div>
+          <div class="form-group new_user_fields">
+            <%= password_field_tag "password2", '', placeholder: '请再次确认新密码', class: "form-control form-control form-control-lg", style: 'display: ' %>
+          </div>
+
+          <div class="form-actions">
+            <%= submit_tag "确定", class: "btn btn-primary btn-lg btn-block disabled", id: 'submit' %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function check_email_field(){
+  if(jQuery('#email').val().match('@')){
+    jQuery.get('/the_users/is_email_existing?email=' + jQuery('#email').val(), function(data){
+      if(data.result) {
+        jQuery('#password_for_exitsing_email').show()
+        jQuery('.new_user_fields').hide()
+      }else{
+        jQuery('#password_for_exitsing_email').hide()
+        jQuery('.new_user_fields').show()
+      }
+      jQuery('#submit').removeClass('disabled')
+    })
+  }else{
+    jQuery('#submit').addClass('disabled')
+  }
+}
+
+setTimeout(function(){
+  check_email_field()
+}, 1000)
+
+jQuery('#email').keydown(function(e){
+  setTimeout(function(){
+    check_email_field()
+  }, 500)
+})
+</script>

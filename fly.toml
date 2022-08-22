@@ -1,0 +1,60 @@
+# fly.toml file generated for forum-web3dali-com on 2022-08-05T16:43:08+08:00
+
+app = "forum-web3dali-com"
+kill_signal = "SIGINT"
+kill_timeout = 5
+processes = []
+
+[build]
+  [build.args]
+    BUNDLER_VERSION = "2.3.3"
+    NODE_VERSION = "14"
+    RUBY_VERSION = "3.1.1"
+
+[mounts]
+  destination = "/app/public/uploads"
+  source = "files"
+
+[deploy]
+  release_command = "bundle exec rails db:migrate"
+
+[env]
+  PORT = "8080"
+  SERVER_COMMAND = "bundle exec puma -C config/puma.rb"
+  DATABASE_URL = "postgres://postgres:9792a77ee8ee92a2f629a232005c3b06eecb9eaaa1d0794f@forum-web3dali-com-db.internal:5432/forum-web3dali-com-db"
+  REDIS_URL = "redis://default:moneymoneyHOME888@homeland-web3-dali-redis.internal:6379"
+  domain = "forum.web3dali.com"
+
+[experimental]
+  allowed_public_ports = []
+  auto_rollback = true
+
+[[services]]
+  http_checks = []
+  internal_port = 8080
+  processes = ["app"]
+  protocol = "tcp"
+  script_checks = []
+  [services.concurrency]
+    hard_limit = 25
+    soft_limit = 20
+    type = "connections"
+
+  [[services.ports]]
+    force_https = true
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+
+  [[services.tcp_checks]]
+    grace_period = "1s"
+    interval = "15s"
+    restart_limit = 0
+    timeout = "2s"
+
+[[statics]]
+  guest_path = "/app/public"
+  url_prefix = "/"

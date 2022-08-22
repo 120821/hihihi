@@ -1,0 +1,28 @@
+<%
+  address_name = "#{params[:wallet_type]}_address"
+  resource.send "#{address_name}=", params[:address]
+  resource.wallet_type = params[:wallet_type]
+%>
+<%= f.hidden_field :wallet_type %>
+<%= hidden_field_tag :address, params[:address] %>
+<%= render "shared/error_messages", target: @user %>
+<%= form_group(f, :login) do %>
+  <%= f.text_field :login, class: "form-control form-control-lg", placeholder: t("users.login"), hint: t("users.suggest_using_twitter_id") %>
+<% end %>
+<%= form_group(f, :name) do %>
+  <%= f.text_field :name, class: "form-control form-control-lg", placeholder: t("activerecord.attributes.user.name") %>
+<% end %>
+<%= form_group(f, :email) do %>
+  <%= f.text_field :email, type: :email, class: "form-control form-control-lg", placeholder: t("activerecord.attributes.user.email") %>
+  <div id="is_email_available"> </div>
+<% end %>
+
+<div class="form-group">
+  <div class="custom-control custom-checkbox custom-checkbox-lg">
+    <%= f.check_box :email_public, checked: true, class: "custom-control-input" %>
+    <label for="user_email_public"  class="custom-form-label"><%= t("activerecord.attributes.user.email_public") %></label>
+  </div>
+</div>
+<%= form_group(f, "#{address_name}") do %>
+  <%= f.text_field "#{address_name}", class: "form-control form-control-lg", readonly:true %>
+<% end %>

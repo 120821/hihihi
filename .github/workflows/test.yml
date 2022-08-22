@@ -1,0 +1,75 @@
+name: Test
+
+on: push
+jobs:
+  lint:
+    name: AutoCorrect Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: huacnlee.autocorrect
+        uses: huacnlee/autocorrect-action@v1.9.5
+  assets_compile:
+    name: Assets Compile
+    runs-on: ubuntu-latest
+    container: homeland/base:3.1.0-slim-buster
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          sed -i "s/gems.ruby-china.org/rubygems.org/g" Gemfile.lock
+          bundle config path vendor/bundle
+          bundle install
+          yarn
+      - name: Assets Precompile
+        run: bundle exec rails assets:precompile RAILS_PRECOMPILE=1 RAILS_ENV=production SECRET_KEY_BASE=fake_secure_for_compile
+
+  test:
+    name: CI Test
+    runs-on: ubuntu-latest
+    container: homeland/base:3.1.0-slim-buster
+    services:
+      postgres:
+        image: postgres:10
+        env:
+          POSTGRES_DB: homeland-test
+          POSTGRES_USER: "admin"
+          POSTGRES_PASSWORD: "123456"
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:latest
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      RAILS_ENV: test
+      REDIS_URL: redis://redis:6379/1
+      DATABASE_URL: postgres://admin:123456@postgres:5432/homeland-test
+    steps:
+      - uses: actions/checkout@v2
+      - uses: huacnlee/autocorrect-action@main
+      - name: RubyGems cache
+        uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+      - name: Install dependencies
+        run: |
+          bundle config path vendor/bundle
+          bundle install
+      - name: Before tests
+        run: |
+          sed -i "s/gems.ruby-china.org/rubygems.org/g" Gemfile.lock
+          bundle exec rails db:migrate
+      - name: Run Standard
+        run: bundle exec standardrb
+      - name: Run tests
+        run: bundle exec rails test

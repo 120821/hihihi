@@ -1,0 +1,15 @@
+<div class="opts">
+  <% if !turbolinks_ios? %>
+    <%= likeable_tag(@topic) %>
+    <%= topic_follow_tag(@topic) %>
+    <%= topic_favorite_tag(@topic) %>
+  <% end %>
+  <div class="float-right">
+    <div class="dropdown">
+      <a href="#" data-bs-toggle ="dropdown">
+        <%= icon_tag("ellipsis-v") %>
+      </a>
+      <%= render "menu" %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+version: '3'
+services:
+  rails:
+    container_name: "homeland"
+    build: .
+    volumes:
+      - ./:/usr/src/app
+    #command: sh -c "bundle exec rails s -b 0.0.0.0"
+    command: 'tail -F /dev/null'
+    ports:
+      - "3000:3000"
+      - "3035:3035"
+    stdin_open: true
+    tty: true
+    #environment:
+      #- APP_VERSION=local

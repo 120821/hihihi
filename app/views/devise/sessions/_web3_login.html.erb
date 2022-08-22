@@ -1,0 +1,81 @@
+<div class="border-1 border-lightgray bg-white"
+  style="border-radius: 10px; height:125px;font-family: PingFang SC;font-size: 14px; margin-top: 20px ">
+  <div style="font-weight: 400;font-size: 18px;line-height: 25px;margin-left: 24px;padding-top: 16px;color: #000000;">
+    Web3登录
+    <div class='button_wrapper' class="search_row">
+      <div class='dc_button'>
+        <a href='#' class='eth_connect' >
+          <%= image_pack_tag('metamask.png', style: 'width: 24px; height: 24px') %>
+          MetaMask
+        </a>
+      </div>
+      <div class='dc_button'>
+        <a href='#' class='polka_connect' >
+          <%= image_pack_tag('polka.png', style: 'width: 24px; height: 24px') %>
+          Polkadot
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelector('a.eth_connect').addEventListener('click', async () => {
+  if (typeof window.ethereum !== 'undefined') {
+    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+    $('<form action="/account/sign_in" id="eth_login" method="POST"></form>')
+      .append(jQuery('<input>', {
+        'name': 'authenticity_token',
+        'value': $('meta[name="csrf-token"]').attr('content'),
+        'type': 'hidden'
+      }))
+      .append(jQuery('<input>', {
+        'name': 'wallet_type',
+        'value': 'eth',
+        'type': 'hidden'
+      }))
+      .append(jQuery('<input>', {
+        'name': 'address',
+        'value': accounts[0],
+        'type': 'hidden'
+      }))
+      .appendTo('body')
+      .submit()
+
+  }else {
+    alert('You have not installed a wallet(e.g. Metamask) yet, please go to install it')
+  }
+});
+
+document.querySelector('a.polka_connect').addEventListener('click', async () => {
+  const extensions = await polka.web3Enable(window.location.hostname);
+
+  if (!extensions.length) {
+    alert('Polkadot extension not found, please go to install it: https://polkadot.js.org/extension/');
+    return
+  }
+
+  const accounts = await polka.web3Accounts();
+  console.info("=== accounts: ", accounts)
+
+  $('<form action="/account/sign_in" id="polka_login" method="POST"></form>')
+    .append(jQuery('<input>', {
+      'name': 'authenticity_token',
+      'value': $('meta[name="csrf-token"]').attr('content'),
+      'type': 'hidden'
+    }))
+    .append(jQuery('<input>', {
+      'name': 'wallet_type',
+      'value': 'polka',
+      'type': 'hidden'
+    }))
+    .append(jQuery('<input>', {
+      'name': 'address',
+      'value': accounts[0].address,
+      'type': 'hidden'
+    }))
+    .appendTo('body')
+    .submit()
+});
+
+</script>

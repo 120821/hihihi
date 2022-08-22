@@ -1,0 +1,22 @@
+default: &default
+  adapter: postgresql
+  pool: <%= ENV["DATABASE_POOL"] || 64 %>
+  timeout: 5000
+  encoding: utf-8
+  user: admin
+  username: admin
+  password: 88888888
+  host: localhost
+  #host: 192.168.10.54
+
+development:
+  <<: *default
+  database: homeland_web3-dev
+
+test:
+  <<: *default
+  database: homeland_web3-test
+
+production:
+  <<: *default
+  database: homeland_web3-dev

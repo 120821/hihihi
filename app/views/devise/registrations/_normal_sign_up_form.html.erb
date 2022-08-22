@@ -1,0 +1,29 @@
+<%= puts "== f: #{f}" %>
+<% if auth_info.present? %>
+  <%= f.hidden_field :omniauth_provider %>
+  <%= f.hidden_field :omniauth_uid %>
+<% end %>
+<%= render "shared/error_messages", target: resource %>
+<%= form_group(f, :login) do %>
+  <%= f.text_field :login, class: "form-control form-control-lg", placeholder: t("users.login"), hint: t("users.suggest_using_twitter_id") %>
+<% end %>
+
+<%= form_group(f, :name) do %>
+  <%= f.text_field :name, class: "form-control form-control-lg", placeholder: t("activerecord.attributes.user.name") %>
+<% end %>
+<%= form_group(f, :email) do %>
+  <%= f.text_field :email, type: :email, class: "form-control form-control-lg", placeholder: t("activerecord.attributes.user.email") %>
+  <div id="is_email_available"> </div>
+<% end %>
+<div class="form-group">
+  <div class="custom-control custom-checkbox custom-checkbox-lg">
+    <%= f.check_box :email_public, checked: true, class: "custom-control-input" %>
+    <label for="user_email_public"  class="custom-form-label"><%= t("activerecord.attributes.user.email_public") %></label>
+  </div>
+</div>
+<%= form_group(f, :password) do %>
+  <%= f.password_field :password, class: "form-control form-control-lg", placeholder: t("activerecord.attributes.user.password") %>
+<% end %>
+<%= form_group(f, :password_confirmation) do %>
+  <%= f.password_field :password_confirmation, class: "form-control form-control-lg", placeholder: t("activerecord.attributes.user.password_confirmation") %>
+<% end %>
